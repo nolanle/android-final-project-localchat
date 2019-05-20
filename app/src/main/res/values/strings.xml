@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Local Chat</string>
+    <string name="main_description">Tạo tài khoản để tham gia chat</string>
+    <string name="main_username">Nhập username</string>
+    <string name="app_title">Local Chat</string>
+    <string name="main_join">Tham Gia</string>
+    <string name="broadcast_welcome">Chào mừng </string>
+    <string name="broadcast_waiting">Vui lòng đợi người khác tham gia</string>
+    <string name="broadcast_no_users_available">Không có người nào trực tuyến…</string>
+</resources>
