@@ -27,9 +27,6 @@ public class MainActivity extends AppCompatActivity {
         txtUsername = findViewById(R.id.txtUsername);
         btnJoin = findViewById(R.id.btnJoin);
 
-        // Set Owner name as username
-        //txtUsername.setText(this.getOwnerContactName()[0]);
-
         // Auto turn Wifi to ON
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifiManager.setWifiEnabled(true);

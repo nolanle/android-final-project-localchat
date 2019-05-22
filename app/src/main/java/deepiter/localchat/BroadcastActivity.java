@@ -182,7 +182,6 @@ public class BroadcastActivity extends AppCompatActivity implements WifiP2pManag
             intent.putExtra("name", username);
             startActivityForResult(intent, 1);
         }
-
     }
 
     @Override
@@ -192,20 +191,19 @@ public class BroadcastActivity extends AppCompatActivity implements WifiP2pManag
                 wifiManager.requestGroupInfo(localChannel, new WifiP2pManager.GroupInfoListener() {
                     @Override
                     public void onGroupInfoAvailable(WifiP2pGroup group) {
-                        if (group != null && wifiManager != null && localChannel != null) {
-                            wifiManager.removeGroup(localChannel, new WifiP2pManager.ActionListener() {
+                    if (group != null && wifiManager != null && localChannel != null) {
+                        wifiManager.removeGroup(localChannel, new WifiP2pManager.ActionListener() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, "removeGroup onSuccess2 -");
+                            }
 
-                                @Override
-                                public void onSuccess() {
-                                    Log.d(TAG, "removeGroup onSuccess2 -");
-                                }
-
-                                @Override
-                                public void onFailure(int reason) {
-                                    Log.d(TAG, "removeGroup onFailure2 -" + reason);
-                                }
-                            });
-                        }
+                            @Override
+                            public void onFailure(int reason) {
+                                Log.d(TAG, "removeGroup onFailure2 -" + reason);
+                            }
+                        });
+                    }
                     }
                 });
             }
