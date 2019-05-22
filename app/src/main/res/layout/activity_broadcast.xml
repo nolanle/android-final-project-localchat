@@ -43,6 +43,7 @@
             android:text="@string/broadcast_welcome" />
 
         <TextView
+            android:id="@+id/lblBroadcastWaiting"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,6 +63,7 @@
             tools:listitem="@layout/fragment_client"
             android:paddingStart="20dp"
             tools:ignore="RtlSymmetry">
+
         </ListView>
 
         <TextView
@@ -71,6 +73,13 @@
             android:text="@string/broadcast_no_users_available"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/broadcast_refresh"
+            android:onClick="onRefresh" />
 
     </LinearLayout>
 

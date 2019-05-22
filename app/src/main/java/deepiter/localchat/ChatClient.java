@@ -17,18 +17,24 @@ public class ChatClient {
         listener=new Listener(dataIn);
     }
 
-    public String getName(){return name;}
+    public String getName(){
+        return name;
+    }
 
-    public BufferedReader getDataIn(){return dataIn;}
+    public BufferedReader getDataIn(){
+        return dataIn;
+    }
 
-    public PrintWriter getDataOut(){return dataOut;}
+    public PrintWriter getDataOut(){
+        return dataOut;
+    }
 
     public void startListening(){
-        listener.listening=true;
+        listener.listening = true;
         listener.start();
     }
 
     public void stopListening(){
-        listener.listening=false;
+        listener.listening = false;
     }
 }

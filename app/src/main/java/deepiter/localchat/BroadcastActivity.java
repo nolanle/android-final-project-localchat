@@ -1,6 +1,5 @@
 package deepiter.localchat;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +11,8 @@ import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
-
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,77 +21,20 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class BroadcastActivity extends AppCompatActivity implements WifiP2pManager.ConnectionInfoListener {
-    /**
-     * Wifi management
-     *
-     * @var WifiP2pManager
-     */
     private WifiP2pManager wifiManager;
-
-    /**
-     * Local Channel
-     *
-     * @var Channel
-     */
     private Channel localChannel;
-
-    /**
-     * Broadcast Receiver
-     *
-     * @var BroadcastReceiver
-     */
     private BroadcastReceiver bcReceiver;
-
-    /**
-     * List of clients
-     *
-     * @var WifiP2pDeviceList
-     */
     private WifiP2pDeviceList clients;
-
-    /**
-     * List view of clients
-     *
-     * @var ListView
-     */
     private ListView clientsList;
-
-    /**
-     * Wifi Array Adapter
-     *
-     * @var ArrayAdapter<String>
-     */
-    private ArrayAdapter<String> wifiArrayAdapter;
-
-    /**
-     * Wifi Array Adapter
-     *
-     * @var ArrayAdapter<String>
-     */
+    private ArrayAdapter<String> wifiAdapter;
     private WifiP2pDevice connectedPartner;
-    private int PORT = 8888;
     private String TAG = "##BoadcastReceiverAct";
-    IntentFilter intentFilter;
-
-    /**
-     * Client Username
-     *
-     * @var String
-     */
-    String username;
+    private IntentFilter intentFilter;
+    private String username;
 
     /**
      * Client List Listener
@@ -113,10 +53,10 @@ public class BroadcastActivity extends AppCompatActivity implements WifiP2pManag
             }
             clients = new WifiP2pDeviceList(clientList);
 
-            wifiArrayAdapter.clear();
+            wifiAdapter.clear();
             for (WifiP2pDevice client : clientList.getDeviceList()) {
 
-                wifiArrayAdapter.add(client.deviceName); //+ "\n" + peer.deviceAddress
+                wifiAdapter.add(client.deviceName); //+ "\n" + peer.deviceAddress
                 Log.d("INPeerListListenerNAME:", client.deviceName);
             }
         }
@@ -175,12 +115,12 @@ public class BroadcastActivity extends AppCompatActivity implements WifiP2pManag
             method.invoke(wifiManager, localChannel, username, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
-                    Log.d(TAG, "Thay đổi tên thành công.");
+                    Log.d(TAG, "Name changed.");
                 }
 
                 @Override
                 public void onFailure(int reason) {
-                    Log.d(TAG, "Thay đổi tên thất bại: " + reason);
+                    Log.d(TAG, "Failure of change name: " + reason);
                 }
             });
         } catch (Exception e) {
@@ -199,9 +139,9 @@ public class BroadcastActivity extends AppCompatActivity implements WifiP2pManag
             }
         });
         clientsList = findViewById(R.id.ListView);
-        wifiArrayAdapter = new ArrayAdapter<String>(this, R.layout.fragment_client, R.id.lblUsername);
+        wifiAdapter = new ArrayAdapter<String>(this, R.layout.fragment_client, R.id.lblUsername);
 
-        clientsList.setAdapter(wifiArrayAdapter);
+        clientsList.setAdapter(wifiAdapter);
         clientsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -228,27 +168,52 @@ public class BroadcastActivity extends AppCompatActivity implements WifiP2pManag
             }
 
         });
-        receiveConnectRequest.execute();
+
+        SocketServer socketServer = new SocketServer(BroadcastActivity.this);
+        socketServer.execute();
     }
 
-    /**
-     * The requested connection info is available
-     *
-     * @param info Wi-Fi p2p connection info
-     */
     @Override
-    public void onConnectionInfoAvailable(WifiP2pInfo info) { }
+    public void onConnectionInfoAvailable(WifiP2pInfo info) {
+        Log.d(TAG, "pre connect " + Boolean.toString(info.groupFormed));
+        if (info.groupFormed) {
+            Intent intent = new Intent(BroadcastActivity.this, ChatActivity.class);
+            intent.putExtra("info", info);
+            intent.putExtra("name", username);
+            startActivityForResult(intent, 1);
+        }
 
-    /**
-     * Called when pointer capture is enabled or disabled for the current window.
-     *
-     * @param hasCapture True if the window has pointer capture.
-     */
+    }
+
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) { }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (wifiManager != null && localChannel != null) {
+                wifiManager.requestGroupInfo(localChannel, new WifiP2pManager.GroupInfoListener() {
+                    @Override
+                    public void onGroupInfoAvailable(WifiP2pGroup group) {
+                        if (group != null && wifiManager != null && localChannel != null) {
+                            wifiManager.removeGroup(localChannel, new WifiP2pManager.ActionListener() {
 
-    public void connectToClient(final WifiP2pDevice wifiPeer)
-    {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d(TAG, "removeGroup onSuccess2 -");
+                                }
+
+                                @Override
+                                public void onFailure(int reason) {
+                                    Log.d(TAG, "removeGroup onFailure2 -" + reason);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+
+    public void connectToClient(final WifiP2pDevice wifiPeer) {
         this.connectedPartner = wifiPeer;
         final WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = wifiPeer.deviceAddress;
@@ -264,50 +229,17 @@ public class BroadcastActivity extends AppCompatActivity implements WifiP2pManag
 
     }
 
-    @SuppressLint("StaticFieldLeak")
-    AsyncTask<Void, Void, Void> receiveConnectRequest = new AsyncTask<Void, Void, Void>() {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                ServerSocket server = new ServerSocket();
-                Socket client = server.accept();
-                BufferedReader dataIn = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                PrintWriter dataOut = new PrintWriter(client.getOutputStream(), true);
-                String in;
-                while (true) {
-                    if ((in = dataIn.readLine()) != null) {
-                        String request;
-                        String name;
-                        try {
-                            JSONObject json = new JSONObject(in);
-                            request = json.getString("request");
-                            name = json.getString("name");
-                        } catch (JSONException e) {
-                            request = "";
-                            name = "";
-                        }
-                        if (request.equals("connection request")) {
-                            //TODO: *name* wants to connect to you. (Accept/Decline)
-                            //For now is accepts automatically
-                            String ack = "";
-                            try {
-                                ack = new JSONObject().put("type", "ack").toString();
-                            } catch (JSONException e) {
-                                Log.d(TAG, "creating ack failed :" + e.getMessage());
-                            }
-                            dataOut.println(ack);
-                            Intent intent = new Intent(BroadcastActivity.this, ChatActivity.class);
-                            //TODO: Give necessary info to intent.
-                            startActivity(intent);
-                            Log.d(TAG, "Transitioning to Chat Activity");
-                            break;
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void onRefresh(View view) {
+        wifiManager.discoverPeers(localChannel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                //will not provide info about who it discovered
             }
-            return null;
-        }
-    };
+
+            @Override
+            public void onFailure(int reasonCode) {
+
+            }
+        });
+    }
 }

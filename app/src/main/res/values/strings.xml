@@ -8,4 +8,6 @@
     <string name="broadcast_waiting">Vui lòng đợi người khác tham gia</string>
     <string name="broadcast_no_users_available">Không có người nào trực tuyến…</string>
     <string name="todo">TODO</string>
+    <string name="invite_title">Mời bạn bè tham gia</string>
+    <string name="broadcast_refresh">Tải lại</string>
 </resources>

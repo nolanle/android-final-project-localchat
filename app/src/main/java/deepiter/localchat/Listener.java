@@ -1,6 +1,7 @@
 package deepiter.localchat;
 
 import android.util.Log;
+
 import java.io.BufferedReader;
 
 public class Listener extends Thread{
