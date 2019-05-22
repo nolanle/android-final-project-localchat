@@ -7,4 +7,5 @@
     <string name="broadcast_welcome">Chào mừng </string>
     <string name="broadcast_waiting">Vui lòng đợi người khác tham gia</string>
     <string name="broadcast_no_users_available">Không có người nào trực tuyến…</string>
+    <string name="todo">TODO</string>
 </resources>

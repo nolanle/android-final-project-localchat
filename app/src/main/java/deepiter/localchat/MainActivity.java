@@ -1,7 +1,5 @@
 package deepiter.localchat;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
@@ -30,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         btnJoin = findViewById(R.id.btnJoin);
 
         // Set Owner name as username
-        txtUsername.setText(this.getOwnerContactName()[0]);
+        //txtUsername.setText(this.getOwnerContactName()[0]);
 
         // Auto turn Wifi to ON
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -40,11 +38,7 @@ public class MainActivity extends AppCompatActivity {
         txtUsername.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(s.toString().trim().length()==0){
-                    btnJoin.setEnabled(false);
-                } else {
-                    btnJoin.setEnabled(true);
-                }
+                // todo
             }
 
             @Override
@@ -61,17 +55,6 @@ public class MainActivity extends AppCompatActivity {
                 // todo
             }
         });
-    }
-
-    public String[] getOwnerContactName() {
-        AccountManager manager = AccountManager.get(this);
-        Account[] accounts = manager.getAccountsByType("com.google");
-        int size = accounts.length;
-        String[] names = new String[size];
-        for (int i = 0; i < size; i++) {
-            names[i] = accounts[i].name;
-        }
-        return names;
     }
 
     public void joinPressed(View view) {
